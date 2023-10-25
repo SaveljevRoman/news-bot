@@ -1,0 +1,22 @@
+version: '3.1'
+
+services:
+  db:
+    image: postgres:16
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: news-bot
+      PGDATA: /var/lib/postgresql/data/
+      PGTZ: "Europe/Moscow"
+      TZ: "Europe/Moscow"
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgsql-db:/var/lib/postgresql/data/
+
+
+volumes:
+  pgsql-db:
+    driver: local
