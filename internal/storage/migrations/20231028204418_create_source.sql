@@ -2,7 +2,7 @@
 -- +goose StatementBegin
 CREATE TABLE sources
 (
-    id         SERIAL PRIMARY KEY,
+    id         BIGSERIAL PRIMARY KEY,
     name       VARCHAR(255) NOT NULL,
     feed_url   VARCHAR(255) NOT NULL,
     priority   INT          NOT NULL,

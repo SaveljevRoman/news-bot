@@ -1,9 +1,10 @@
 module news-bot
 
-go 1.20
+go 1.21
 
 require (
 	github.com/SlyMarbo/rss v1.0.5
+	github.com/jmoiron/sqlx v1.3.5
 	github.com/samber/lo v1.38.1
 )
 
