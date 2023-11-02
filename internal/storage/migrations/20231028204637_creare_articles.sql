@@ -6,7 +6,7 @@ CREATE TABLE articles
     source_id    BIGINT       NOT NULL,
     title        VARCHAR(255) NOT NULL,
     link         TEXT         NOT NULL UNIQUE,
-    summary      TEXT         NOT NULL,
+    summary      TEXT,
     published_at TIMESTAMP    NOT NULL,
     created_at   TIMESTAMP    NOT NULL DEFAULT NOW(),
     posted_at    TIMESTAMP,
