@@ -2,8 +2,15 @@ package notifier
 
 import (
 	"context"
+	"fmt"
+	"github.com/go-shiori/go-readability"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	"io"
+	"net/http"
+	"news-bot/internal/botkit/markup"
 	"news-bot/internal/model"
+	"regexp"
+	"strings"
 	"time"
 )
 
@@ -61,7 +68,7 @@ func (n *Notifier) SelectAndSendArticle(ctx context.Context) error {
 		return err
 	}
 
-	if err := n.SendArticle(article, summary); err != nil {
+	if err := n.sendArticle(article, summary); err != nil {
 		return err
 	}
 
@@ -69,9 +76,53 @@ func (n *Notifier) SelectAndSendArticle(ctx context.Context) error {
 }
 
 func (n *Notifier) extractSummary(ctx context.Context, article model.Article) (string, error) {
-	// todo
+	var reader io.Reader
+
+	if article.Summary != "" {
+		reader = strings.NewReader(article.Summary)
+	} else {
+		resp, err := http.Get(article.Link)
+		if err != nil {
+			return "", err
+		}
+		defer resp.Body.Close()
+
+		reader = resp.Body
+	}
+	doc, err := readability.FromReader(reader, nil)
+	if err != nil {
+		return "", err
+	}
+
+	summary, err := n.summarizer.Summarize(ctx, cleanText(doc.TextContent))
+	if err != nil {
+		return "", err
+	}
+
+	return "\n\n" + summary, nil
 }
 
-func (n *Notifier) SendArticle(article model.Article, summary string) error {
-	// todo
+func (n *Notifier) sendArticle(article model.Article, summary string) error {
+	const msgFormat = "*%s*%s\n\n%s"
+
+	msg := tgbotapi.NewMessage(n.channelID, fmt.Sprintf(
+		msgFormat,
+		markup.EscapeForMarkdown(article.Title),
+		markup.EscapeForMarkdown(article.Summary),
+		markup.EscapeForMarkdown(article.Link),
+	))
+	msg.ParseMode = tgbotapi.ModeMarkdownV2
+
+	_, err := n.bot.Send(msg)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+var redundantNewLines = regexp.MustCompile(`\n{3,}`)
+
+func cleanText(text string) string {
+	return redundantNewLines.ReplaceAllString(text, "\n")
 }
