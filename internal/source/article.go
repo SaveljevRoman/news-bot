@@ -24,6 +24,10 @@ type dbArticle struct {
 	CreatedAt   time.Time    `db:"created_at"`
 }
 
+func NewArticleStorage(db *sqlx.DB) *ArticlePostgresStorage {
+	return &ArticlePostgresStorage{db: db}
+}
+
 func (a *ArticlePostgresStorage) Store(ctx context.Context, article model.Article) error {
 	conn, err := a.connection(ctx)
 	if err != nil {
