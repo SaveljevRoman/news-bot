@@ -12,7 +12,6 @@ import (
 	"news-bot/internal/config"
 	fetcher2 "news-bot/internal/fetcher"
 	notifier2 "news-bot/internal/notifier"
-	"news-bot/internal/source"
 	"news-bot/internal/storage"
 	"news-bot/internal/summary"
 	"os"
@@ -36,7 +35,7 @@ func main() {
 	defer db.Close()
 
 	var (
-		articleStorage = source.NewArticleStorage(db)
+		articleStorage = storage.NewArticleStorage(db)
 		sourceStorage  = storage.NewSourceStorage(db)
 		fetcher        = fetcher2.New(
 			articleStorage,
