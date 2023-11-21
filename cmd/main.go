@@ -8,6 +8,7 @@ import (
 	_ "github.com/lib/pq"
 	"log"
 	"news-bot/internal/bot"
+	"news-bot/internal/bot/middleware"
 	"news-bot/internal/botkit"
 	"news-bot/internal/config"
 	fetcher2 "news-bot/internal/fetcher"
@@ -58,8 +59,9 @@ func main() {
 
 	newsBot := botkit.New(botAPI)
 	newsBot.RegisterCmdView("start", bot.ViewCmStart())
-	newsBot.RegisterCmdView("addsource", bot.ViewCmdAddSource(sourceStorage))
-	newsBot.RegisterCmdView("listsources", bot.ViewCmdListSources(sourceStorage))
+	newsBot.RegisterCmdView("addsource", middleware.AdminsOnly(config.Get().TelegramChannelID, bot.ViewCmdAddSource(sourceStorage)))
+	newsBot.RegisterCmdView("listsources", middleware.AdminsOnly(config.Get().TelegramChannelID, bot.ViewCmdListSources(sourceStorage)))
+	newsBot.RegisterCmdView("deletesource", middleware.AdminsOnly(config.Get().TelegramChannelID, bot.ViewCmdDeleteSource(sourceStorage)))
 
 	go func(ctx context.Context) {
 		if err := fetcher.Start(ctx); err != nil {
