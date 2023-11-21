@@ -44,7 +44,7 @@ func (s *OpenAISummarizer) Summarize(ctx context.Context, text string) (string, 
 		Messages: []openai.ChatCompletionMessage{
 			{
 				Role:    openai.ChatMessageRoleSystem,
-				Content: fmt.Sprintf("%s%s", text, s.prompt),
+				Content: fmt.Sprintf("%s%s", "speak russian pls "+text, s.prompt),
 			},
 		},
 		MaxTokens:   256,
