@@ -34,7 +34,7 @@ func (b *Bot) handleUpdate(ctx context.Context, update tgbotapi.Update) {
 		}
 	}()
 
-	if update.Message == nil || update.Message.IsCommand() {
+	if update.Message == nil || !update.Message.IsCommand() {
 		return
 	}
 
